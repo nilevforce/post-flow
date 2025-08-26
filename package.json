@@ -1,0 +1,11 @@
+{
+  "name": "post-flow",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "keywords": [],
+  "author": "Nikolai Levchenko",
+  "license": "ISC",
+  "description": "PostFlow — простой API для работы с почтой"
+}
