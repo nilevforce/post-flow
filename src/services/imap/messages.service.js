@@ -53,7 +53,6 @@ const searchMessages = async ({
           to: parsed.to?.value?.map((addr) => addr.address) || [],
           textBody: parsed.text,
           htmlBody: parsed.html,
-          attachments: parsed.attachments || [],
           receivedAt: parsed.date,
           folder,
         };
