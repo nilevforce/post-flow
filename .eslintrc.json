@@ -12,6 +12,7 @@
   },
   "rules": {
     "import/extensions": "off",
-    "max-len": "off"
+    "max-len": "off",
+    "no-restricted-syntax": "off"
   }
 }
