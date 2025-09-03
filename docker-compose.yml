@@ -27,6 +27,8 @@ services:
     volumes:
       - redis_data:/data
     command: [ "redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}" ]
+    networks:
+      - backend
 
   adminer:
     image: adminer
@@ -37,10 +39,35 @@ services:
     networks:
       - backend
 
+  postflow:
+    build: .
+    container_name: post-flow-app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - APP_PORT=${APP_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - post_flow_data:/data
+    networks:
+      - backend
+
 volumes:
   pg_data:
   redis_data:
-
+  post_flow_data:
 
 networks:
   backend:
