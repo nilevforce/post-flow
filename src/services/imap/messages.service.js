@@ -46,14 +46,20 @@ const searchMessages = async ({
         const parsed = await simpleParser(foundMessage.source);
 
         return {
+          id: parsed.id,
+          uid: foundMessage.uid,
           subject: parsed.subject,
           from: parsed.from?.value[0]?.address,
-          to: parsed.to?.value[0]?.address,
-          date: parsed.date,
-          text: parsed.text,
+          to: parsed.to?.value?.map((addr) => addr.address) || [],
+          textBody: parsed.text,
+          htmlBody: parsed.html,
+          attachments: parsed.attachments || [],
+          receivedAt: parsed.date,
+          folder,
         };
       }),
     );
+
     return messages;
   });
 };
