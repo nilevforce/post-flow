@@ -30,11 +30,10 @@ const searchMessages = async ({
     if (sentBefore) searchObj.sentBefore = new Date(sentBefore);
     if (from) searchObj.from = from;
     if (to) searchObj.to = to;
-
     await client.mailboxOpen(folder);
 
-    let uids = await client.search(searchObj);
-    uids = uids.slice(offset, limit);
+    const foundUids = await client.search(searchObj);
+    const uids = foundUids.slice(offset, limit);
 
     const messages = await Promise.all(
       uids.map(async (uid) => {
@@ -59,7 +58,12 @@ const searchMessages = async ({
       }),
     );
 
-    return messages;
+    return {
+      data: messages,
+      limit,
+      offset,
+      totalCount: foundUids.length,
+    };
   });
 };
 
