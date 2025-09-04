@@ -8,10 +8,11 @@ const searchMessages = async ({
   folder = 'INBOX',
   limit = 10,
   offset = 0,
-  sentSince,
-  sentBefore,
+  since,
+  before,
   from,
   to,
+  uidStart,
 } = {}) => {
   const {
     host,
@@ -24,23 +25,28 @@ const searchMessages = async ({
     username,
     password,
   }, async (client) => {
-    const searchObj = {};
-    if (sentSince) searchObj.sentSince = new Date(sentSince);
-    if (!sentSince) searchObj.sentSince = substractTime({ months: 2 });
-    if (sentBefore) searchObj.sentBefore = new Date(sentBefore);
-    if (from) searchObj.from = from;
-    if (to) searchObj.to = to;
+    const isSent = folder === 'INBOX.Sent';
+    const searchObj = {
+      ...(uidStart && { uid: `${uidStart}:${uidStart + limit}` }),
+      [isSent ? 'sentSince' : 'since']: since ? new Date(since) : substractTime({ months: 2 }),
+      ...(before && { [isSent ? 'sentBefore' : 'before']: new Date(before) }),
+      ...(from && { from }),
+      ...(to && { to }),
+    };
+
     await client.mailboxOpen(folder);
 
-    const foundUids = await client.search(searchObj);
+    const foundUids = await client.search(searchObj, { uid: true });
     const uids = foundUids.slice(offset, limit);
 
     const messages = await Promise.all(
       uids.map(async (uid) => {
-        const foundMessage = await client.fetchOne(uid, {
-          source: true,
-          uid: true,
-        });
+        const foundMessage = await client
+          .fetchOne(
+            uid,
+            { source: true, uid: true },
+            { uid: true },
+          );
 
         const parsed = await simpleParser(foundMessage.source);
 
@@ -62,7 +68,7 @@ const searchMessages = async ({
       data: messages,
       limit,
       offset,
-      totalCount: foundUids.length,
+      totalCount: messages.length,
     };
   });
 };

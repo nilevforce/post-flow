@@ -15,19 +15,21 @@ const searchMessages = async (req, res) => {
     folder = 'INBOX',
     limit,
     offset,
-    sentSince,
-    sentBefore,
+    since,
+    before,
+    uidStart,
     from,
     to,
-  } = req.query;
+  } = req.validated;
 
   const messages = await MessagesService.searchMessages({
     sessionId,
     folder,
     limit,
     offset,
-    sentSince,
-    sentBefore,
+    since,
+    before,
+    uidStart,
     from,
     to,
   });

@@ -9,6 +9,7 @@ const searchMessagesSchema = Joi
     from: Joi.string().email(),
     to: Joi.string().email(),
     sessionId: SessionSchemas.sessionIdSchema.required(),
+    uidStart: Joi.number().integer().min(0),
     limit: Joi.number().integer().min(1).max(100)
       .default(10),
     offset: Joi.number().integer().min(0)
